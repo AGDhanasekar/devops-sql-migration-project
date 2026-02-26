@@ -30,9 +30,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Wait for MySQL
-        run: sleep 20
+      - name: Install MySQL Client
+        run: sudo apt-get update && sudo apt-get install -y mysql-client
 
-      - name: Run Migration Script
+      - name: Debug - List Files
         run: |
-          mysql -h 127.0.0.1 -uroot -proot testdb < migrations/V1__create_users.sql
+          pwd
+          ls -R
+
+      - name: Wait for MySQL
+        run: sleep 25
+
+      - name: Run Migration Scripts
+        run: |
+          for file in migrations/*.sql; do
+            mysql -h 127.0.0.1 -uroot -proot testdb < "$file"
+          done
